@@ -2,16 +2,19 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.static('.'));
 
-// Serve index.html at root
+// Serve static files first
+app.use(express.static(path.join(__dirname, '.')));
+
+// Serve index.html for root
 app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: __dirname });
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Scrape endpoint
@@ -62,6 +65,11 @@ app.get('/api/skins', async (req, res) => {
     console.error('Scraping error:', error);
     res.status(500).json({ error: 'Failed to scrape data' });
   }
+});
+
+// Serve index.html for all other routes (for SPA behavior)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, () => {

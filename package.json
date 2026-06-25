@@ -1,12 +1,13 @@
 {
   "name": "malskins",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Site de skins de Counter Strike",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node server.js",
+    "start": "node server.js"
   },
-  "keywords": [],
+  "keywords": ["cs2", "skins", "counter-strike"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -26,6 +27,15 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0d0d0d;
+        }
+
+        /* Remove underline from all buttons */
+        .btn,
+        .btn-all-skins,
+        .btn-sell-now,
+        .cta-button,
+        .skin-cart-btn {
+            text-decoration: none;
         }
 
         /* Header */
@@ -94,6 +104,24 @@
             color: #ffffff;
         }
 
+        .header-nav-social {
+            display: none;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-nav-social a {
+            width: 32px;
+            height: 32px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .header-nav-social a:hover {
+            color: #a0a0a0;
+            transform: scale(1.1);
+        }
+
         /* Hamburger Menu */
         .hamburger {
             display: none;
@@ -128,6 +156,10 @@
             }
             .hamburger {
                 display: flex;
+            }
+            .header-nav-social {
+                display: flex;
+                margin-top: 20px;
             }
         }
 
@@ -279,47 +311,68 @@
 
         /* CTA Section */
         .cta-section {
-            padding: 60px 40px;
-            background: #0d0d0d;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .cta-card {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #1a1a1a 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 50px 60px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 60px 40px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 30px;
+            text-align: center;
+            gap: 40px;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         }
 
         .cta-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
             animation: shine 3s infinite;
         }
 
         @keyframes shine {
-            0% { left: -100%; }
-            50%, 100% { left: 100%; }
+            0% { transform: translateX(-100%); }
+            50%, 100% { transform: translateX(100%); }
         }
 
         .cta-card::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(255, 255, 255, 0.02) 100%);
+            background: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -329,12 +382,22 @@
         }
 
         .cta-title {
-            font-size: 42px;
+            font-size: 56px;
             font-weight: 900;
-            color: white;
+            background: linear-gradient(135deg, #ffffff 0%, #c0c0c0 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             line-height: 1.1;
             text-transform: uppercase;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
         }
 
         .cta-actions {
@@ -342,43 +405,78 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 15px;
+            align-items: center;
+            gap: 25px;
         }
 
         .cta-button {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
             color: #0d0d0d;
             border: none;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 20px 50px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
+            justify-content: center;
+            gap: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 8px 30px rgba(255, 255, 255, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
         }
 
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 15px 50px rgba(255, 255, 255, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
         }
 
         .cta-button svg {
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
         }
 
         .cta-subtitle {
-            font-size: 13px;
-            color: #808080;
+            font-size: 16px;
+            color: #a0a0a0;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            letter-spacing: 3px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-subtitle::before,
+        .cta-subtitle::after {
+            content: '';
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
         }
 
         .hero {
@@ -491,6 +589,7 @@
             font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
@@ -570,6 +669,9 @@
             text-transform: uppercase;
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-all-skins:hover {
@@ -869,6 +971,7 @@
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
         }
 
@@ -1291,14 +1394,13 @@
                 text-align: center;
             }
             .cta-section {
-                padding: 40px 20px;
+                padding: 60px 20px;
             }
             .cta-card {
-                padding: 30px;
-                text-align: center;
+                padding: 40px 25px;
             }
             .cta-title {
-                font-size: 28px;
+                font-size: 32px;
             }
             .cta-actions {
                 align-items: center;
@@ -1306,7 +1408,224 @@
             }
             .cta-button {
                 width: 100%;
+                max-width: 350px;
                 justify-content: center;
+                padding: 16px 30px;
+                font-size: 14px;
+            }
+            .cta-subtitle {
+                font-size: 13px;
+                letter-spacing: 2px;
+            }
+            .cta-subtitle::before,
+            .cta-subtitle::after {
+                width: 25px;
+            }
+        }
+
+        /* Currency Section */
+        .currency-section {
+            padding: 100px 40px;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .currency-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.02) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+            pointer-events: none;
+        }
+
+        .currency-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .currency-title {
+            font-size: 52px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, #c0c0c0 50%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .currency-card {
+            background: linear-gradient(145deg, #3a3a3a 0%, #252525 25%, #1a1a1a 50%, #252525 75%, #3a3a3a 100%);
+            border-radius: 20px;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .currency-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        }
+
+        .currency-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+            pointer-events: none;
+        }
+
+        .currency-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                inset 0 2px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .currency-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .currency-flag {
+            width: 50px;
+            height: 35px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .currency-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .currency-value {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #c0c0c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .currency-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .currency-update {
+            font-size: 12px;
+            color: #606060;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .currency-update span {
+            color: #00ff88;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-card {
+            background: linear-gradient(145deg, #3a3a3a 0%, #252525 25%, #1a1a1a 50%, #252525 75%, #3a3a3a 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .currency-section {
+                padding: 60px 20px;
+            }
+
+            .currency-title {
+                font-size: 32px;
+            }
+
+            .currency-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .currency-value {
+                font-size: 36px;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                padding: 20px;
             }
         }
     </style>
@@ -1315,10 +1634,34 @@
     <header class="header">
         <img src="public/logo.png" alt="Malskins Logo" class="header-logo">
         <nav class="header-nav">
-            <a href="#">Início</a>
-            <a href="#">Skins</a>
-            <a href="#">Vender</a>
-            <a href="#">Como Funciona</a>
+            <a href="#inicio">Início</a>
+            <a href="#skins">Skins</a>
+            <a href="#vender">Vender</a>
+            <a href="#como-funciona">Como Funciona</a>
+            <div class="header-nav-social">
+                <a href="https://www.facebook.com/profile.php?id=61589701776610" target="_blank" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+                <a href="https://youtube.com/@malskins?si=EJZVbfzF3vqUtiUW" target="_blank" aria-label="YouTube">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/_malskins?igsh=c3RrazA3c2RqaHVo&utm_source=qr" target="_blank" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                </a>
+                <a href="https://vt.tiktok.com/ZSC2ES8RG/" target="_blank" aria-label="TikTok">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v14.81a2.75 2.75 0 1 1-2.55-2.71 2.64 2.64 0 0 1 2.45 1.7V11a6.26 6.26 0 0 0 3.63 1.12v-3.4a4.9 4.9 0 0 1-.31-2.03z"/>
+                    </svg>
+                </a>
+            </div>
         </nav>
         <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
             <span></span>
@@ -1327,8 +1670,8 @@
         </button>
     </header>
 
-    <section class="hero">
-        <video class="hero-video" autoplay muted loop playsinline>
+    <section class="hero" id="inicio">
+        <video class="hero-video" autoplay muted playsinline id="heroVideo">
             <source src="public/fundodesktop.mp4" type="video/mp4" media="(min-width: 769px)">
             <source src="public/fundomobile.mp4" type="video/mp4" media="(max-width: 768px)">
         </video>
@@ -1340,18 +1683,18 @@
                 </div>
                 <p class="hero-text">O melhor lugar para comprar e vender skins de Counter Strike com segurança, rapidez e o melhor preço.</p>
                 <div class="buttons-container">
-                    <button class="btn btn-buy">
+                    <a href="https://wa.me/5524988715878?text=Olá! Quero comprar skins!" target="_blank" class="btn btn-buy">
                         <svg viewBox="0 0 24 24">
                             <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                         </svg>
                         Comprar Skins
-                    </button>
-                    <button class="btn btn-sell">
+                    </a>
+                    <a href="https://wa.me/5524988715878?text=Olá! Quero vender skins!" target="_blank" class="btn btn-sell">
                         <svg viewBox="0 0 24 24">
                             <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
                         </svg>
                         Vender Skins
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="hero-right">
@@ -1360,12 +1703,12 @@
         </div>
     </section>
 
-    <section class="skins-section">
+    <section class="skins-section" id="skins">
         <div class="skins-content">
             <div class="skins-text">
                 <h2>AS MELHORES SKINS ESTÃO AQUI</h2>
                 <p>Skins exclusivas, com os melhores preços do mercado. Atualizações diárias e estoque sempre renovado.</p>
-                <button class="btn-all-skins">VER TODAS AS SKINS →</button>
+                <a href="https://wa.me/5524988715878?text=Olá! Quero ver todas as skins!" target="_blank" class="btn-all-skins">VER TODAS AS SKINS →</a>
             </div>
             <div class="carousel-wrapper">
                 <div class="skins-carousel" id="skinsCarousel">
@@ -1378,11 +1721,11 @@
                             <p class="skin-name">★ Butterfly Knife</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 4.850,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1394,11 +1737,11 @@
                             <p class="skin-name">★ M9 Bayonet | Doppler</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 4.850,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1410,11 +1753,11 @@
                             <p class="skin-name">AWP | Dragon Lore</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 9.200,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1426,11 +1769,11 @@
                             <p class="skin-name">AK-47 | Vulcan</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 2.750,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1443,11 +1786,11 @@
                             <p class="skin-name">★ Butterfly Knife</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 4.850,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1459,11 +1802,11 @@
                             <p class="skin-name">★ M9 Bayonet | Doppler</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 4.850,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1475,11 +1818,11 @@
                             <p class="skin-name">AWP | Dragon Lore</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 9.200,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1491,11 +1834,11 @@
                             <p class="skin-name">AK-47 | Vulcan</p>
                             <div class="skin-footer">
                                 <span class="skin-price">R$ 2.750,00</span>
-                                <button class="skin-cart-btn">
+                                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar esta skin!" target="_blank" class="skin-cart-btn">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                     </svg>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1504,8 +1847,8 @@
         </div>
     </section>
 
-    <section class="sell-section">
-        <video class="sell-video" autoplay muted loop playsinline>
+    <section class="sell-section" id="vender">
+        <video class="sell-video" autoplay muted playsinline id="sellVideo">
             <source src="public/vendadesktop.mp4" type="video/mp4" media="(min-width: 769px)">
             <source src="public/vendamobile.mp4" type="video/mp4" media="(max-width: 768px)">
         </video>
@@ -1514,12 +1857,12 @@
             <div class="sell-content-text">
                 <h1 class="sell-title">VENDA SUAS SKINS<br>DE FORMA RÁPIDA<br>E SEGURA</h1>
                 <p class="sell-subtitle">Receba ofertas justas e pagamento rápido via PIX. Sem complicação.</p>
-                <button class="btn-sell-now">
+                <a href="https://wa.me/5524988715878?text=Olá! Quero vender skins!" target="_blank" class="btn-sell-now">
                     VENDER SKINS AGORA
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
-                </button>
+                </a>
             </div>
             <div class="stats-container">
                 <div class="stat-item">
@@ -1559,7 +1902,7 @@
         </div>
     </section>
 
-    <section class="how-it-works-section">
+    <section class="how-it-works-section" id="como-funciona">
         <div class="how-it-works-content">
             <h2 class="how-it-works-title">COMO FUNCIONA</h2>
             <div class="how-it-works-grid">
@@ -1591,22 +1934,77 @@
         </div>
     </section>
 
+    <section class="currency-section">
+        <div class="currency-content">
+            <h2 class="currency-title">Valores em Tempo Real</h2>
+            
+            <div class="currency-grid">
+                <div class="currency-card">
+                    <div class="currency-header">
+                        <img src="https://flagcdn.com/w40/us.png" alt="USA" class="currency-flag">
+                        <span class="currency-name">Dólar (USD)</span>
+                    </div>
+                    <div class="currency-value" id="usdValue">R$ 0,00</div>
+                    <div class="currency-label">1 USD = BRL</div>
+                    <div class="currency-update">
+                        <span>●</span>
+                        Última atualização: <span id="usdUpdate">--:--:--</span>
+                    </div>
+                </div>
+                
+                <div class="currency-card">
+                    <div class="currency-header">
+                        <img src="https://flagcdn.com/w40/cn.png" alt="China" class="currency-flag">
+                        <span class="currency-name">Yuan (CNY)</span>
+                    </div>
+                    <div class="currency-value" id="cnyValue">R$ 0,00</div>
+                    <div class="currency-label">1 CNY = BRL</div>
+                    <div class="currency-update">
+                        <span>●</span>
+                        Última atualização: <span id="cnyUpdate">--:--:--</span>
+                    </div>
+                </div>
+                
+                <div class="currency-card">
+                    <div class="currency-header">
+                        <img src="https://flagcdn.com/w40/br.png" alt="Brasil" class="currency-flag">
+                        <span class="currency-name">Real (BRL)</span>
+                    </div>
+                    <div class="currency-value">R$ 1,00</div>
+                    <div class="currency-label">Moeda Base</div>
+                </div>
+            </div>
+            
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3 class="chart-title">Histórico USD → BRL (Últimos 7 dias)</h3>
+                    <canvas id="usdChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">Histórico CNY → BRL (Últimos 7 dias)</h3>
+                    <canvas id="cnyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="cta-section">
         <div class="cta-card">
             <div class="cta-content">
                 <h2 class="cta-title">PRONTO PARA<br>UPAR SEU INVENTÁRIO?</h2>
             </div>
             <div class="cta-actions">
-                <button class="cta-button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 6h12v12H6z"/>
-                        <path d="M10 10l4 4-4 4"/>
+                <a href="https://wa.me/5524988715878?text=Olá! Quero comprar skins!" target="_blank" class="cta-button">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm11.38-9.63c-1.79-1.79-4.7-1.8-6.49 0l-1.71 1.71 2.12 2.12c.29-.3.76.29 1.06 0l1.71-1.71c.5-.5 1.37-.5 1.87 0l1.79 1.79c.51.51.51 1.37 0 1.87l-1.71 1.71c-.3.3-.29.77 0 1.06l2.12 2.12 1.71-1.71c2.5-2.5 2.5-6.59-.01-8.38z"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 2.71 0 5.16-.94 7.07-2.93l2.93-7.07C23 17.52 23 12 23 12S23 6.48 18.52 2 12 2z"/>
                     </svg>
                     COMPRAR SKINS
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
-                </button>
+                </a>
                 <p class="cta-subtitle">+10.000 SKINS DISPONÍVEIS</p>
             </div>
         </div>
@@ -1621,28 +2019,26 @@
             <div class="footer-section">
                 <h4>Redes Sociais</h4>
                 <div class="footer-social">
-                    <a href="#" class="social-icon" aria-label="Instagram">
+                    <a href="https://www.facebook.com/profile.php?id=61589701776610" target="_blank" class="social-icon" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <a href="https://youtube.com/@malskins?si=EJZVbfzF3vqUtiUW" target="_blank" class="social-icon" aria-label="YouTube">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/_malskins?igsh=c3RrazA3c2RqaHVo&utm_source=qr" target="_blank" class="social-icon" aria-label="Instagram">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                         </svg>
                     </a>
-                    <a href="#" class="social-icon" aria-label="Twitter">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Discord">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="12" r="1"/>
-                            <circle cx="15" cy="12" r="1"/>
-                            <path d="M7.5 7.5C8.7 6.5 10.2 6 12 6s3.3.5 4.5 1.5"/>
-                            <path d="M7 16.5C8.2 17.5 10 18 12 18s3.8-.5 5-1.5"/>
-                            <path d="M15 17.5a10 10 0 0 0 6.5-2.5"/>
-                            <path d="M9 17.5a10 10 0 0 1-6.5-2.5"/>
-                            <path d="M21 7.5a10 10 0 0 0-6.5-2.5"/>
-                            <path d="M3 7.5a10 10 0 0 1 6.5-2.5"/>
+                    <a href="https://vt.tiktok.com/ZSC2ES8RG/" target="_blank" class="social-icon" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v14.81a2.75 2.75 0 1 1-2.55-2.71 2.64 2.64 0 0 1 2.45 1.7V11a6.26 6.26 0 0 0 3.63 1.12v-3.4a4.9 4.9 0 0 1-.31-2.03z"/>
                         </svg>
                     </a>
                 </div>
@@ -1739,57 +2135,276 @@
             renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         });
 
-        // Auto-scroll for mobile "Como Funciona" section
-        const howItWorksGrid = document.querySelector('.how-it-works-grid');
-        if (howItWorksGrid && window.innerWidth <= 768) {
-            let currentIndex = 0;
-            const cards = document.querySelectorAll('.how-card');
-            const totalCards = cards.length;
+        // Currency Exchange Rates and Charts
+        let usdChart, cnyChart;
 
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % totalCards;
-                const targetCard = cards[currentIndex];
-                howItWorksGrid.scrollTo({
-                    left: targetCard.offsetLeft - (howItWorksGrid.offsetWidth - targetCard.offsetWidth) / 2,
-                    behavior: 'smooth'
-                });
-            }, 1000);
+        // Initialize charts
+        function initCharts() {
+            const usdCtx = document.getElementById('usdChart').getContext('2d');
+            const cnyCtx = document.getElementById('cnyChart').getContext('2d');
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#a0a0a0'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#a0a0a0'
+                        }
+                    }
+                }
+            };
+
+            usdChart = new Chart(usdCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'USD → BRL',
+                        data: [],
+                        borderColor: '#ffffff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ffffff'
+                    }]
+                },
+                options: chartOptions
+            });
+
+            cnyChart = new Chart(cnyCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'CNY → BRL',
+                        data: [],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#00ff88'
+                    }]
+                },
+                options: chartOptions
+            });
         }
 
-        // Header scroll effect
-        const header = document.querySelector('.header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        // Hamburger menu toggle
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const headerNav = document.querySelector('.header-nav');
-
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('active');
-            headerNav.classList.toggle('active');
-        });
-
-        // Close menu when clicking a link
-        const navLinks = document.querySelectorAll('.header-nav a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                hamburgerBtn.classList.remove('active');
-                headerNav.classList.remove('active');
+        // Format currency
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 4
             });
-        });
+        }
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!header.contains(e.target) && headerNav.classList.contains('active')) {
-                hamburgerBtn.classList.remove('active');
-                headerNav.classList.remove('active');
+        // Get current time
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('pt-BR');
+        }
+
+        // Generate mock historical data for charts (7 days)
+        function generateMockHistory(baseRate) {
+            const labels = [];
+            const data = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+                
+                // Add some random variation (±5%)
+                const variation = (Math.random() - 0.5) * 0.1;
+                data.push(baseRate * (1 + variation));
             }
+            
+            return { labels, data };
+        }
+
+        // Fetch exchange rates using AwesomeAPI
+        async function fetchExchangeRates() {
+            try {
+                const response = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL,CNY-BRL');
+                const data = await response.json();
+                
+                const usdRate = parseFloat(data.USDBRL.bid);
+                const cnyRate = parseFloat(data.CNYBRL.bid);
+                
+                // Update display values
+                document.getElementById('usdValue').textContent = formatCurrency(usdRate);
+                document.getElementById('cnyValue').textContent = formatCurrency(cnyRate);
+                document.getElementById('usdUpdate').textContent = getCurrentTime();
+                document.getElementById('cnyUpdate').textContent = getCurrentTime();
+                
+                // Update charts if first load
+                if (usdChart.data.labels.length === 0) {
+                    const usdHistory = generateMockHistory(usdRate);
+                    usdChart.data.labels = usdHistory.labels;
+                    usdChart.data.datasets[0].data = usdHistory.data;
+                    usdChart.update();
+                    
+                    const cnyHistory = generateMockHistory(cnyRate);
+                    cnyChart.data.labels = cnyHistory.labels;
+                    cnyChart.data.datasets[0].data = cnyHistory.data;
+                    cnyChart.update();
+                }
+                
+            } catch (error) {
+                console.error('Error fetching exchange rates:', error);
+                // Fallback to mock data if API fails
+                const mockUsd = 5.45;
+                const mockCny = 0.75;
+                
+                document.getElementById('usdValue').textContent = formatCurrency(mockUsd);
+                document.getElementById('cnyValue').textContent = formatCurrency(mockCny);
+                document.getElementById('usdUpdate').textContent = getCurrentTime();
+                document.getElementById('cnyUpdate').textContent = getCurrentTime();
+                
+                if (usdChart.data.labels.length === 0) {
+                    const usdHistory = generateMockHistory(mockUsd);
+                    usdChart.data.labels = usdHistory.labels;
+                    usdChart.data.datasets[0].data = usdHistory.data;
+                    usdChart.update();
+                    
+                    const cnyHistory = generateMockHistory(mockCny);
+                    cnyChart.data.labels = cnyHistory.labels;
+                    cnyChart.data.datasets[0].data = cnyHistory.data;
+                    cnyChart.update();
+                }
+            }
+        }
+
+        // Video slow motion and ping-pong loop
+        function setupVideoPingPong(videoElement, playbackRate = 0.5) {
+            videoElement.playbackRate = playbackRate;
+            let isPlayingForward = true;
+
+            videoElement.addEventListener('timeupdate', () => {
+                if (isPlayingForward && videoElement.currentTime >= videoElement.duration - 0.1) {
+                    isPlayingForward = false;
+                    videoElement.playbackRate = -playbackRate;
+                } else if (!isPlayingForward && videoElement.currentTime <= 0.1) {
+                    isPlayingForward = true;
+                    videoElement.playbackRate = playbackRate;
+                }
+            });
+
+            // Handle video end event as fallback
+            videoElement.addEventListener('ended', () => {
+                isPlayingForward = !isPlayingForward;
+                videoElement.playbackRate = isPlayingForward ? playbackRate : -playbackRate;
+                videoElement.play();
+            });
+        }
+
+        // Initialize everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-scroll for mobile "Como Funciona" section
+            const howItWorksGrid = document.querySelector('.how-it-works-grid');
+            if (howItWorksGrid && window.innerWidth <= 768) {
+                let currentIndex = 0;
+                const cards = document.querySelectorAll('.how-card');
+                const totalCards = cards.length;
+
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % totalCards;
+                    const targetCard = cards[currentIndex];
+                    howItWorksGrid.scrollTo({
+                        left: targetCard.offsetLeft - (howItWorksGrid.offsetWidth - targetCard.offsetWidth) / 2,
+                        behavior: 'smooth'
+                    });
+                }, 1000);
+            }
+
+            // Header scroll effect
+            const header = document.querySelector('.header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Hamburger menu toggle
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const headerNav = document.querySelector('.header-nav');
+
+            hamburgerBtn.addEventListener('click', () => {
+                hamburgerBtn.classList.toggle('active');
+                headerNav.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!header.contains(e.target) && headerNav.classList.contains('active')) {
+                    hamburgerBtn.classList.remove('active');
+                    headerNav.classList.remove('active');
+                }
+            });
+
+            // Smooth scroll for navigation links
+            document.querySelectorAll('.header-nav a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        // Close mobile menu if open
+                        hamburgerBtn.classList.remove('active');
+                        headerNav.classList.remove('active');
+                    }
+                });
+            });
+
+            initCharts();
+            fetchExchangeRates();
+            
+            // Setup videos
+            const heroVideo = document.getElementById('heroVideo');
+            const sellVideo = document.getElementById('sellVideo');
+            
+            if (heroVideo) {
+                heroVideo.addEventListener('loadedmetadata', () => {
+                    setupVideoPingPong(heroVideo, 0.3); // 0.3x playback speed (very slow)
+                });
+            }
+            
+            if (sellVideo) {
+                sellVideo.addEventListener('loadedmetadata', () => {
+                    setupVideoPingPong(sellVideo, 0.3); // 0.3x playback speed (very slow)
+                });
+            }
+            
+            // Update every 30 seconds
+            setInterval(fetchExchangeRates, 30000);
         });
     </script>
 </body>

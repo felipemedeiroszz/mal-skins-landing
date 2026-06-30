@@ -2296,7 +2296,7 @@
         }
 
         // Video slow motion and ping-pong loop
-        function setupVideoPingPong(videoElement, playbackRate = 0.5) {
+        function setupVideoPingPong(videoElement, playbackRate = 1.0) {
             videoElement.playbackRate = playbackRate;
             let isPlayingForward = true;
 
@@ -2393,13 +2393,13 @@
             
             if (heroVideo) {
                 heroVideo.addEventListener('loadedmetadata', () => {
-                    setupVideoPingPong(heroVideo, 0.3); // 0.3x playback speed (very slow)
+                    setupVideoPingPong(heroVideo, 1.0); // 1.0x normal playback speed
                 });
             }
             
             if (sellVideo) {
                 sellVideo.addEventListener('loadedmetadata', () => {
-                    setupVideoPingPong(sellVideo, 0.3); // 0.3x playback speed (very slow)
+                    setupVideoPingPong(sellVideo, 1.0); // 1.0x normal playback speed
                 });
             }
             

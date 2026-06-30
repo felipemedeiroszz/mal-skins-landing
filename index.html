@@ -494,6 +494,7 @@
             height: 100%;
             object-fit: cover;
             z-index: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         .hero-overlay {
@@ -849,6 +850,7 @@
             height: 100%;
             object-fit: cover;
             z-index: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         .sell-overlay {
@@ -1672,8 +1674,8 @@
 
     <section class="hero" id="inicio">
         <video class="hero-video" autoplay muted playsinline id="heroVideo">
-            <source src="public/fundodesktop.mp4" type="video/mp4" media="(min-width: 769px)">
-            <source src="public/fundomobile.mp4" type="video/mp4" media="(max-width: 768px)">
+            <source src="public/fundodesktop.mp4?v=1" type="video/mp4" media="(min-width: 769px)">
+            <source src="public/fundomobile.mp4?v=1" type="video/mp4" media="(max-width: 768px)">
         </video>
         <div class="hero-overlay"></div>
         <div class="hero-content">
@@ -1849,8 +1851,8 @@
 
     <section class="sell-section" id="vender">
         <video class="sell-video" autoplay muted playsinline id="sellVideo">
-            <source src="public/vendadesktop.mp4" type="video/mp4" media="(min-width: 769px)">
-            <source src="public/vendamobile.mp4" type="video/mp4" media="(max-width: 768px)">
+            <source src="public/vendadesktop.mp4?v=1" type="video/mp4" media="(min-width: 769px)">
+            <source src="public/vendamobile.mp4?v=1" type="video/mp4" media="(max-width: 768px)">
         </video>
         <div class="sell-overlay"></div>
         <div class="sell-content">
@@ -2295,26 +2297,48 @@
             }
         }
 
-        // Video slow motion and ping-pong loop
+        // Video ping-pong with optimized large chunks for performance
         function setupVideoPingPong(videoElement, playbackRate = 1.0) {
             videoElement.playbackRate = playbackRate;
             let isPlayingForward = true;
+            let reverseInterval = null;
 
             videoElement.addEventListener('timeupdate', () => {
-                if (isPlayingForward && videoElement.currentTime >= videoElement.duration - 0.1) {
+                const currentTime = videoElement.currentTime;
+                
+                if (isPlayingForward && currentTime >= videoElement.duration - 0.5) {
                     isPlayingForward = false;
-                    videoElement.playbackRate = -playbackRate;
-                } else if (!isPlayingForward && videoElement.currentTime <= 0.1) {
-                    isPlayingForward = true;
-                    videoElement.playbackRate = playbackRate;
+                    videoElement.pause();
+                    startReverse(videoElement, playbackRate);
                 }
             });
 
-            // Handle video end event as fallback
+            function startReverse(video, rate) {
+                if (reverseInterval) clearInterval(reverseInterval);
+                
+                reverseInterval = setInterval(() => {
+                    if (isPlayingForward) {
+                        clearInterval(reverseInterval);
+                        video.play();
+                        return;
+                    }
+                    
+                    // Large chunks (0.3s) to minimize browser load
+                    video.currentTime -= 0.3 * rate;
+                    
+                    if (video.currentTime <= 0) {
+                        isPlayingForward = true;
+                        video.currentTime = 0;
+                        clearInterval(reverseInterval);
+                        video.play();
+                    }
+                }, 100); // 100ms = 10 updates per second (very low load)
+            }
+
             videoElement.addEventListener('ended', () => {
-                isPlayingForward = !isPlayingForward;
-                videoElement.playbackRate = isPlayingForward ? playbackRate : -playbackRate;
-                videoElement.play();
+                isPlayingForward = false;
+                videoElement.currentTime = videoElement.duration - 0.5;
+                startReverse(videoElement, playbackRate);
             });
         }
 
@@ -2387,7 +2411,7 @@
             initCharts();
             fetchExchangeRates();
             
-            // Setup videos
+            // Setup videos with ping-pong loop
             const heroVideo = document.getElementById('heroVideo');
             const sellVideo = document.getElementById('sellVideo');
             
